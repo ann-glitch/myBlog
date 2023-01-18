@@ -1,21 +1,42 @@
 const express = require("express");
 const cors = require("cors");
+const dotenv = require("dotenv");
+const connectDB = require("./config/db");
+const colors = require("colors");
 
 const app = express();
 const port = 5000;
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://localhost:3000",
+  })
+);
 
-app.get("/register", async (req, res) => {
-  //   const { firstName, lastName, username, password, confirmPassword } = req.body;
+//load env vars
+dotenv.config({ path: "./config/config.env" });
 
-  res.status(201).json({
-    success: true,
-    data: req.body,
-  });
+//connect mongo
+connectDB();
+
+//route files
+const users = require("./routes/users");
+
+//mount routers
+app.use("/api/v1/blogs", users);
+
+const server = app.listen(port, () => {
+  console.log(`server running on port ${port}`.cyan);
 });
 
-app.listen(port, () => {
-  console.log(`server running on port ${port}`);
+// handle unhandled promise rejections
+process.on("unhandledRejection", (err, promise) => {
+  console.log(`MongoServerError: ${err.message}`.red);
+
+  //close server and exit process
+  server.close(() => {
+    process.exit(1);
+  });
 });

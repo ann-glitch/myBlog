@@ -1,5 +1,5 @@
-import axios from "axios";
 import { useState } from "react";
+import axios from "axios";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -20,7 +20,16 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await axios.post("http://localhost/5000/register", formData);
+    const res = await axios.post(
+      "http://localhost:5000/api/v1/blogs/register",
+      formData
+    );
+
+    if (res.request.status === 200) {
+      alert("Registered successfully");
+    } else {
+      alert("Couldn't register");
+    }
 
     resetForm();
   };
