@@ -1,14 +1,15 @@
 import { useState } from "react";
 import axios from "axios";
-// import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
-  // const [redirect, setRedirect] = useState(false);
+  const [redirect, setRedirect] = useState(false);
 
+  //handle input
   const handleInput = (e) => {
     e.preventDefault();
     const { id, value } = e.target;
@@ -16,33 +17,29 @@ const LoginPage = () => {
     setFormData({ ...formData, [id]: value });
   };
 
+  //handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const res = await axios.post(
       "http://localhost:5000/api/v1/blogs/login",
-      formData
+      formData,
+      { withCredentials: true }
     );
 
-    console.log(res);
-
     if (res.status === 200) {
-      // setRedirect(true);
-      window.location = "/";
+      setRedirect(true);
     } else {
       alert("Couldn't login");
     }
-
-    //for some weird reason, my navigation isn't working so for now i will use the default window.location
-    //hence i commented them out.
-
-    // if (redirect) {
-    //   // return <Navigate to={"/"} />;
-    //   window.location = "/";
-    // }
     resetForm();
   };
 
+  if (redirect) {
+    return <Navigate to={"/"} />;
+  }
+
+  //reset form func.
   const resetForm = () => {
     setFormData({
       username: "",

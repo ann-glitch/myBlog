@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
+const jwt = require("jsonwebtoken");
 
 //register user
 exports.register = asyncHandler(async (req, res) => {
@@ -17,13 +18,6 @@ exports.register = asyncHandler(async (req, res) => {
 
 //login user
 exports.login = asyncHandler(async (req, res) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.header("Access-Control-Allow-Credentials", true);
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-
   const { username, password } = req.body;
 
   //validation
@@ -72,8 +66,28 @@ const sendTokenResponse = (user, statusCode, res) => {
     options.secure = true;
   }
 
-  res.status(statusCode).cookie("token", token).json({
+  res.status(statusCode).cookie("token", token, options).json({
     success: true,
     token,
   });
 };
+
+//get profile info
+exports.getProfile = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+
+  res.status(200).json({
+    success: true,
+    data: user,
+  });
+});
+
+//logout
+exports.logout = asyncHandler(async (req, res) => {
+  res.cookie("token", "", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json("OK");
+});
