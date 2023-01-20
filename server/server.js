@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const colors = require("colors");
 const cookieParser = require("cookie-parser");
+const errorHandler = require("./middleware/error");
 
 const app = express();
 const port = 5000;
@@ -29,7 +30,10 @@ connectDB();
 const users = require("./routes/users");
 
 //mount routers
-app.use("/api/v1/blogs", users);
+app.use("/api/v1/auth", users);
+
+//error handler middleware
+app.use(errorHandler);
 
 const server = app.listen(port, () => {
   console.log(`server running on port ${port}`.cyan);

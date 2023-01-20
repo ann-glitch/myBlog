@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+
+import { UserContext } from "../contexts/UserContext";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +10,7 @@ const LoginPage = () => {
     password: "",
   });
   const [redirect, setRedirect] = useState(false);
+  const { setUserInfo } = useContext(UserContext);
 
   //handle input
   const handleInput = (e) => {
@@ -22,12 +25,14 @@ const LoginPage = () => {
     e.preventDefault();
 
     const res = await axios.post(
-      "http://localhost:5000/api/v1/blogs/login",
+      "http://localhost:5000/api/v1/auth/login",
       formData,
       { withCredentials: true }
     );
 
     if (res.status === 200) {
+      const userInfo = res.data;
+      setUserInfo(userInfo);
       setRedirect(true);
     } else {
       alert("Couldn't login");

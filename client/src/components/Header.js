@@ -1,13 +1,15 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect, useContext } from "react";
 import axios from "axios";
 
+import { UserContext } from "./contexts/UserContext";
+
 const Header = () => {
-  const [userInfo, setUserInfo] = useState(null);
+  const { setUserInfo, userInfo } = useContext(UserContext);
 
   const getProfile = async () => {
     const response = await axios.get(
-      "http://localhost:5000/api/v1/blogs/profile",
+      "http://localhost:5000/api/v1/auth/profile",
       { withCredentials: true }
     );
     console.log(response.data);
@@ -19,12 +21,14 @@ const Header = () => {
   }, []);
 
   const logout = async () => {
-    await axios.get("http://localhost:5000/api/v1/blogs/logout", {
+    await axios.get("http://localhost:5000/api/v1/auth/logout", {
       withCredentials: true,
     });
 
     setUserInfo(null);
   };
+
+  const username = userInfo?.username;
 
   return (
     <main>
@@ -33,7 +37,7 @@ const Header = () => {
           MyBlog
         </Link>
         <nav>
-          {userInfo && (
+          {username && (
             <>
               <Link to="/create">Create new post</Link>
               <a href="/login" onClick={logout}>
@@ -41,7 +45,7 @@ const Header = () => {
               </a>
             </>
           )}
-          {!userInfo && (
+          {!username && (
             <>
               <Link to="/login">Login</Link>
               <Link to="/register">Register</Link>
