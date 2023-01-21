@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const colors = require("colors");
 const cookieParser = require("cookie-parser");
 const errorHandler = require("./middleware/error");
+const path = require("path");
 
 const app = express();
 const port = 5000;
@@ -26,11 +27,16 @@ dotenv.config({ path: "./config/config.env" });
 //connect mongo
 connectDB();
 
+//set static folder
+app.use(express.static(path.join(__dirname, "uploads")));
+
 //route files
 const users = require("./routes/users");
+const posts = require("./routes/posts");
 
 //mount routers
 app.use("/api/v1/auth", users);
+app.use("/api/v1/posts", posts);
 
 //error handler middleware
 app.use(errorHandler);

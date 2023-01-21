@@ -1,6 +1,7 @@
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useState } from "react";
+import axios from "axios";
 
 const modules = {
   toolbar: [
@@ -36,7 +37,7 @@ const CreatePost = () => {
     title: "",
     summary: "",
     content: "",
-    files: "",
+    file: "",
   });
 
   //handle input
@@ -55,13 +56,20 @@ const CreatePost = () => {
   //handle input files
   const handleFiles = (e) => {
     const { files } = e.target;
-    setFormData({ ...formData, files: files[0] });
+    setFormData({ ...formData, file: files[0] });
   };
 
   //handle sumbit
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
+    const res = await axios.post(
+      "http://localhost:5000/api/v1/posts/create",
+      formData
+    );
+
+    console.log(res.data);
+    // console.log(formData);
   };
 
   return (
@@ -80,12 +88,7 @@ const CreatePost = () => {
         value={formData.summary}
         onChange={handleInput}
       />
-      <input
-        type="file"
-        id="files"
-        // value={formData.files}
-        onChange={handleFiles}
-      />
+      <input type="file" id="file" onChange={handleFiles} />
       <ReactQuill
         value={formData.content}
         modules={modules}
